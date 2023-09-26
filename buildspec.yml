@@ -1,7 +1,7 @@
 version: 0.2
 env:
   variables:
-    APP_NAME: "angularApp"
+    APP_NAME: "angular-app"
     VERSION: "0.0.1"
     S3: "sample-angular-app-uniandes"
 phases:
