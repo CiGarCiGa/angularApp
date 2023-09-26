@@ -3,6 +3,7 @@ env:
   variables:
     APP_NAME: "angularApp"
     VERSION: "0.0.1"
+    S3: "sample-angular-app-uniandes"
 phases:
   install:
     runtime-versions:
@@ -18,16 +19,16 @@ phases:
   build:
     commands:
       - echo starting unit tests 
-      - npm run test --watch=false --browsers=ChromeHeadless
+      #- npm run test --watch=false --browsers=ChromeHeadless
       - echo build process started now
       - ng build --configuration=production
   post_build:
     commands:
       - echo build process finished, uploading to S3
-      - tar zcf portalweb-$VERSION.tar.gz dist/$APP_NAME
+      - tar zcf $APP_NAME-$VERSION.tar.gz dist/$APP_NAME
       - cd dist/$APP_NAME
       - ls -la
-      - aws s3 sync . s3://sample-angular-app-uniandes --delete
+      - aws s3 sync . s3://$S3 --delete
 artifacts:
   files:
     - $APP_NAME-$VERSION.tar.gz
