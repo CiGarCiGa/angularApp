@@ -1,0 +1,34 @@
+version: 0.2
+env:
+  variables:
+    APP_NAME: "angularApp"
+    VERSION: "0.0.1"
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18.x
+    commands:
+      - npm install -g @angular/cli
+      - curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+      - echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
+      - apt-get -y update
+      - apt-get -y install google-chrome-stable
+      # Install project dependencies
+      - npm install
+  build:
+    commands:
+      - echo starting unit tests 
+      - npm run test --watch=false --browsers=ChromeHeadless
+      - echo build process started now
+      - ng build --configuration=production
+  post_build:
+    commands:
+      - echo build process finished, uploading to S3
+      - tar zcf portalweb-$VERSION.tar.gz dist/$APP_NAME
+      - cd dist/$APP_NAME
+      - ls -la
+      - aws s3 sync . s3://sample-angular-app-uniandes --delete
+artifacts:
+  files:
+    - $APP_NAME-$VERSION.tar.gz
+  discard-paths: yes
